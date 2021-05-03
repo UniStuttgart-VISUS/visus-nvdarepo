@@ -1,10 +1,10 @@
 --- 
-nvdarepo::repo_dir: '/etc/yum.repos.d'
-nvdarepo::repo_owner: 'root'
-nvdarepo::repo_group: 'root'
-nvdarepo::key_dir: '/etc/pki/rpm-gpg'
-nvdarepo::key_prefix: 'RPM-GPG-KEY-'
-
+nvdarepo::cuda::repo_dir: '/etc/yum.repos.d'
+nvdarepo::cuda::repo_ext: '.repo'
+nvdarepo::cuda::repo_owner: 'root'
+nvdarepo::cuda::repo_group: 'root'
+nvdarepo::cuda::key_dir: '/etc/pki/rpm-gpg'
+nvdarepo::cuda::key_prefix: 'RPM-GPG-KEY-'
 nvdarepo::cuda::base_url: 'https://developer.download.nvidia.com/compute/cuda/repos'
 nvdarepo::cuda::version_field: 'major'
 nvdarepo::cuda::key_id: '0xF60F4B3D7FA2AF80'

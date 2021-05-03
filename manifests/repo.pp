@@ -21,6 +21,7 @@
 #                        used when repo_src_override is not set.
 # @param repo_dir The directory where to install the repository file, ie
 #                 "/etc/yum.repos.d" for RedHat-based systems.
+# @param repo_ext The extension of the repository file, typically ".repo".
 # @param repo_owner The name or UID of the owning user of the repository file.
 # @param repo_group The name or UID of the owning group of the repository file.
 # @param key_id The ID of the GPG key used by the repository.
@@ -37,9 +38,10 @@
 define nvdarepo::repo(
         String $base_url,
         String $version_field,
-        Optional[String] $repo_src_override,
-        Optional[String] $distro_override,
+        Variant[String, Boolean] $repo_src_override = false,
+        Variant[String, Boolean] $distro_override = false,
         String $repo_dir,
+        String $repo_ext,
         Variant[String, Integer] $repo_owner,
         Variant[String, Integer] $repo_group,
         String $key_id,
@@ -49,26 +51,20 @@ define nvdarepo::repo(
         String $ensure = present
         ) {
 
-    # Determine the extension of the repository file from the source's name.
-    $repo_ext = if $repo_src =~ /(\.[^\.]+)$/ {
-        "$0"
-    } else {
-        ''
-    }
-
     # Determine the final URL of the repository according to the rules used by
     # NVIDIA to organise their server.
-    $nvda_distro = if ($dist_override == undef) {
-        downcase($facts['os']['name'])
-    } else {
+    $nvda_distro = if ($distro_override) {
         $distro_override
+    } else {
+        downcase($facts['os']['name'])
+        
     }
     $nvda_version = regsubst(downcase($facts['os']['release'][$version_field]),
         '\\.', '')
-    $dist_url = if ($repo_src_override == undef) {
-        "${base_url}/${nvda_distro}${nvda_version}/x86_64"
-    } else {
+    $dist_url = if ($repo_src_override) {
         $repo_src_override
+    } else {
+        "${base_url}/${nvda_distro}${nvda_version}/x86_64"        
     }
      
     # Install the GPG key and the repository.
@@ -84,14 +80,14 @@ define nvdarepo::repo(
 
             # (Un-) Install the repo definition.
             class { 'yum':
-                managed_repos => [ ${title} ],
+                managed_repos => [ $title ],
                 repos => {
-                    ${title} => {
+                    $title => {
                         ensure => $ensure,
-                        descr => $title
+                        descr => $title,
                         gpgcheck => true,
                         baseurl => $dist_url,
-                        target => "${repo_dir}/${title}.repo"
+                        target => "${repo_dir}/${title}${repo_ext}"
                     }
                 }
             }

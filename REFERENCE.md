@@ -6,69 +6,20 @@
 
 ### Classes
 
-* [`nvdarepo`](#nvdarepo): (Un-) Installs NVIDIA package repositories.
+* [`nvdarepo`](#nvdarepo): Installs NVIDIA package repositories.
 * [`nvdarepo::cuda`](#nvdarepocuda): (Un-) Installs the NVIDIA CUDA repository.
+
+### Defined types
+
+* [`nvdarepo::repo`](#nvdareporepo): (Un-) Installs a repository along with its GPG key.
 
 ## Classes
 
 ### <a name="nvdarepo"></a>`nvdarepo`
 
 Installs all known NVIDIA repositories, which is at the moment only the CUDA
-repository which provides CUDA tools and appropriate drivers.
-
-#### Parameters
-
-The following parameters are available in the `nvdarepo` class:
-
-* [`repo_dir`](#repo_dir)
-* [`repo_owner`](#repo_owner)
-* [`repo_group`](#repo_group)
-* [`key_dir`](#key_dir)
-* [`key_prefix`](#key_prefix)
-* [`ensure`](#ensure)
-
-##### <a name="repo_dir"></a>`repo_dir`
-
-Data type: `String`
-
-The directory where to install the repository files, ie
-"/etc/yum.repos.d" for RedHat-based systems.
-
-##### <a name="repo_owner"></a>`repo_owner`
-
-Data type: `Variant[String, Integer]`
-
-The name or UID of the owning user of the repository files.
-
-##### <a name="repo_group"></a>`repo_group`
-
-Data type: `Variant[String, Integer]`
-
-The name or UID of the owning group of the repository files.
-
-##### <a name="key_dir"></a>`key_dir`
-
-Data type: `String`
-
-The directory where the key should be installed. This is only
-used on RedHat-based systems.
-
-##### <a name="key_prefix"></a>`key_prefix`
-
-Data type: `String`
-
-An additional prefix string that is added before the
-name of the key file. This is only used on RedHat-based
-systems and should be something like "RPM-GPG-KEY-".
-
-##### <a name="ensure"></a>`ensure`
-
-Data type: `String`
-
-Determines whether the repositories should be present or absent.
-This defaults to "present".
-
-Default value: `present`
+repository which provides CUDA tools and appropriate drivers. This extra class
+is currently only there for future extensibility.
 
 ### <a name="nvdarepocuda"></a>`nvdarepo::cuda`
 
@@ -85,6 +36,7 @@ The following parameters are available in the `nvdarepo::cuda` class:
 * [`repo_src_override`](#repo_src_override)
 * [`distro_override`](#distro_override)
 * [`repo_dir`](#repo_dir)
+* [`repo_ext`](#repo_ext)
 * [`repo_owner`](#repo_owner)
 * [`repo_group`](#repo_group)
 * [`key_id`](#key_id)
@@ -114,18 +66,26 @@ the repository source.
 
 ##### <a name="repo_src_override"></a>`repo_src_override`
 
-Data type: `Optional[String]`
+Data type: `Variant[String, Boolean]`
 
 Overrides the generated URL of the repository file
-with the specified value.
+with the specified value. This parameter defaults
+to false, which indicates that the repository URL
+should be computed automatically.
+
+Default value: ``false``
 
 ##### <a name="distro_override"></a>`distro_override`
 
-Data type: `Optional[String]`
+Data type: `Variant[String, Boolean]`
 
 Overrides the name in the distribution for the purpose
 of generating the repository URL. This value is only
-used when repo_src_override is not set.
+used when repo_src_override is not set. The parameter
+defaults to false, which indicates that the OS name
+from Puppet facts is used in lower case.
+
+Default value: ``false``
 
 ##### <a name="repo_dir"></a>`repo_dir`
 
@@ -133,6 +93,12 @@ Data type: `String`
 
 The directory where to install the repository file, ie
 "/etc/yum.repos.d" for RedHat-based systems.
+
+##### <a name="repo_ext"></a>`repo_ext`
+
+Data type: `String`
+
+The extension of the repository file, typically ".repo".
 
 ##### <a name="repo_owner"></a>`repo_owner`
 
@@ -172,6 +138,132 @@ Data type: `String`
 An additional prefix string that is added before the
 name of the key file. This is only used on RedHat-based
 systems.
+
+##### <a name="ensure"></a>`ensure`
+
+Data type: `String`
+
+Determines whether the repository should be present or absent.
+This defaults to "present".
+
+Default value: `present`
+
+## Defined types
+
+### <a name="nvdareporepo"></a>`nvdarepo::repo`
+
+This is a utility type that is used by the nvdarepo class. It is not intended
+for direct use by end users. One main feature of the type is that it can
+compute the repository location based on the current layou of NVIDIA's server
+from the OS information provided by Puppet.
+
+#### Parameters
+
+The following parameters are available in the `nvdarepo::repo` defined type:
+
+* [`base_url`](#base_url)
+* [`version_field`](#version_field)
+* [`repo_src_override`](#repo_src_override)
+* [`distro_override`](#distro_override)
+* [`repo_dir`](#repo_dir)
+* [`repo_ext`](#repo_ext)
+* [`repo_owner`](#repo_owner)
+* [`repo_group`](#repo_group)
+* [`key_id`](#key_id)
+* [`key_src`](#key_src)
+* [`key_dir`](#key_dir)
+* [`key_prefix`](#key_prefix)
+* [`ensure`](#ensure)
+
+##### <a name="base_url"></a>`base_url`
+
+Data type: `String`
+
+The base URL where NVIDIA's repositories are located. If no
+repo_src is provided, the module will construct the URL from
+this base URL using the known way NVIDIA is organising their
+server.
+
+##### <a name="version_field"></a>`version_field`
+
+Data type: `String`
+
+This parameter determines which of the version facts is
+used to automatically construct the URL of the
+repository. The parameter defaults to 'major', ie the
+major version of the distribution is used to construct
+the repository source.
+
+##### <a name="repo_src_override"></a>`repo_src_override`
+
+Data type: `Variant[String, Boolean]`
+
+Overrides the generated URL of the repository file
+with the specified value.
+
+Default value: ``false``
+
+##### <a name="distro_override"></a>`distro_override`
+
+Data type: `Variant[String, Boolean]`
+
+Overrides the name in the distribution for the purpose
+of generating the repository URL. This value is only
+used when repo_src_override is not set.
+
+Default value: ``false``
+
+##### <a name="repo_dir"></a>`repo_dir`
+
+Data type: `String`
+
+The directory where to install the repository file, ie
+"/etc/yum.repos.d" for RedHat-based systems.
+
+##### <a name="repo_ext"></a>`repo_ext`
+
+Data type: `String`
+
+The extension of the repository file, typically ".repo".
+
+##### <a name="repo_owner"></a>`repo_owner`
+
+Data type: `Variant[String, Integer]`
+
+The name or UID of the owning user of the repository file.
+
+##### <a name="repo_group"></a>`repo_group`
+
+Data type: `Variant[String, Integer]`
+
+The name or UID of the owning group of the repository file.
+
+##### <a name="key_id"></a>`key_id`
+
+Data type: `String`
+
+The ID of the GPG key used by the repository.
+
+##### <a name="key_src"></a>`key_src`
+
+Data type: `String`
+
+The URL of the GPG key to be installed.
+
+##### <a name="key_dir"></a>`key_dir`
+
+Data type: `String`
+
+The directory where the key should be installed. This is only
+used on RedHat-based systems.
+
+##### <a name="key_prefix"></a>`key_prefix`
+
+Data type: `String`
+
+An additional prefix string that is added before the
+name of the key file. This is only used on RedHat-based
+systems and should be something like "RPM-GPG-KEY-".
 
 ##### <a name="ensure"></a>`ensure`
 

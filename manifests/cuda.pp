@@ -14,12 +14,17 @@
 #                      major version of the distribution is used to construct
 #                      the repository source.
 # @param repo_src_override Overrides the generated URL of the repository file
-#                          with the specified value.
+#                          with the specified value. This parameter defaults
+#                          to false, which indicates that the repository URL
+#                          should be computed automatically.
 # @param distro_override Overrides the name in the distribution for the purpose
 #                        of generating the repository URL. This value is only
-#                        used when repo_src_override is not set.
+#                        used when repo_src_override is not set. The parameter
+#                        defaults to false, which indicates that the OS name
+#                        from Puppet facts is used in lower case.
 # @param repo_dir The directory where to install the repository file, ie
 #                 "/etc/yum.repos.d" for RedHat-based systems.
+# @param repo_ext The extension of the repository file, typically ".repo".
 # @param repo_owner The name or UID of the owning user of the repository file.
 # @param repo_group The name or UID of the owning group of the repository file.
 # @param key_id The ID of the GPG key used by the repository.
@@ -36,9 +41,10 @@
 class nvdarepo::cuda(
         String $base_url,
         String $version_field,
-        Optional[String] $repo_src_override,
-        Optional[String] $distro_override,
+        Variant[String, Boolean] $repo_src_override = false,
+        Variant[String, Boolean] $distro_override = false,
         String $repo_dir,
+        String $repo_ext,
         Variant[String, Integer] $repo_owner,
         Variant[String, Integer] $repo_group,
         String $key_id,
@@ -48,12 +54,13 @@ class nvdarepo::cuda(
         String $ensure = present) {
 
     # Use the repo helper to install the CUDA repository.
-    nvdarepo::repo { $title:
+    nvdarepo::repo { 'nvidia-cuda':
         base_url => $base_url,
         version_field => $version_field,
         repo_src_override => $repo_src_override,
         distro_override => $distro_override,
         repo_dir => $repo_dir,
+        repo_ext => $repo_ext,
         repo_owner => $repo_owner,
         repo_group => $repo_group,
         key_id => $key_id,
