@@ -1,0 +1,104 @@
+# @summary (Un-) Installs a repository along with its GPG key.
+#
+# This is a utility type that is used by the nvdarepo class. It is not intended
+# for direct use by end users. One main feature of the type is that it can
+# compute the repository location based on the current layou of NVIDIA's server
+# from the OS information provided by Puppet.
+#
+# @param base_url The base URL where NVIDIA's repositories are located. If no
+#                 repo_src is provided, the module will construct the URL from
+#                 this base URL using the known way NVIDIA is organising their
+#                 server.
+# @param version_field This parameter determines which of the version facts is
+#                      used to automatically construct the URL of the
+#                      repository. The parameter defaults to 'major', ie the
+#                      major version of the distribution is used to construct
+#                      the repository source.
+# @param repo_src_override Overrides the generated URL of the repository file
+#                          with the specified value.
+# @param distro_override Overrides the name in the distribution for the purpose
+#                        of generating the repository URL. This value is only
+#                        used when repo_src_override is not set.
+# @param repo_dir The directory where to install the repository file, ie
+#                 "/etc/yum.repos.d" for RedHat-based systems.
+# @param repo_owner The name or UID of the owning user of the repository file.
+# @param repo_group The name or UID of the owning group of the repository file.
+# @param key_id The ID of the GPG key used by the repository.
+# @param key_src The URL of the GPG key to be installed.
+# @param key_dir The directory where the key should be installed. This is only
+#                used on RedHat-based systems.
+# @param key_prefix An additional prefix string that is added before the
+#                   name of the key file. This is only used on RedHat-based
+#                   systems and should be something like "RPM-GPG-KEY-".
+# @param ensure Determines whether the repository should be present or absent.
+#               This defaults to "present".
+#
+# @author Christoph Müller
+define nvdarepo::repo(
+        String $base_url,
+        String $version_field,
+        Optional[String] $repo_src_override,
+        Optional[String] $distro_override,
+        String $repo_dir,
+        Variant[String, Integer] $repo_owner,
+        Variant[String, Integer] $repo_group,
+        String $key_id,
+        String $key_src,
+        String $key_dir,
+        String $key_prefix,
+        String $ensure = present
+        ) {
+
+    # Determine the extension of the repository file from the source's name.
+    $repo_ext = if $repo_src =~ /(\.[^\.]+)$/ {
+        "$0"
+    } else {
+        ''
+    }
+
+    # Determine the final URL of the repository according to the rules used by
+    # NVIDIA to organise their server.
+    $nvda_distro = if ($dist_override == undef) {
+        downcase($facts['os']['name'])
+    } else {
+        $distro_override
+    }
+    $nvda_version = regsubst(downcase($facts['os']['release'][$version_field]),
+        '\\.', '')
+    $dist_url = if ($repo_src_override == undef) {
+        "${base_url}/${nvda_distro}${nvda_version}/x86_64"
+    } else {
+        $repo_src_override
+    }
+     
+    # Install the GPG key and the repository.
+    case $facts['os']['family'] {
+        'RedHat': {
+            # (Un-) Install the repository GPG key.
+            unless ($repo_src == undef) {
+                yum::gpgkey { "$key_dir/${key_prefix}${title}":
+                    ensure => $ensure,
+                    source => $key_src,
+                }
+            }
+
+            # (Un-) Install the repo definition.
+            class { 'yum':
+                managed_repos => [ ${title} ],
+                repos => {
+                    ${title} => {
+                        ensure => $ensure,
+                        descr => $title
+                        gpgcheck => true,
+                        baseurl => $dist_url,
+                        target => "${repo_dir}/${title}.repo"
+                    }
+                }
+            }
+        }
+
+        default: {
+            fail(translate('The current distribution is not supported by ${title}.'))
+        }
+    }
+}

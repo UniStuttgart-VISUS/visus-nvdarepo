@@ -1,0 +1,2 @@
+---
+nvdarepo::cuda::distro_override: 'fedora'
