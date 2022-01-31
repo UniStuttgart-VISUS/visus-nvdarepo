@@ -25,7 +25,10 @@
 # @param repo_owner The name or UID of the owning user of the repository file.
 # @param repo_group The name or UID of the owning group of the repository file.
 # @param key_id The ID of the GPG key used by the repository.
-# @param key_src The URL of the GPG key to be installed.
+# @param key_file_name The name of the GPG key file to be installed.
+# @param key_src_override Override the full URL of from which the GPG key is
+#                         retrieved. Otherwise, the key is searched in the
+#                         repository directory.
 # @param key_dir The directory where the key should be installed. This is only
 #                used on RedHat-based systems.
 # @param key_prefix An additional prefix string that is added before the
@@ -45,7 +48,8 @@ define nvdarepo::repo(
         Variant[String, Integer] $repo_owner,
         Variant[String, Integer] $repo_group,
         String $key_id,
-        String $key_src,
+        String $key_file_name,
+        Variant[String, Boolean] $key_src_override = false,
         String $key_dir,
         String $key_prefix,
         String $ensure = present
@@ -66,15 +70,20 @@ define nvdarepo::repo(
     } else {
         "${base_url}/${nvda_distro}${nvda_version}/x86_64"        
     }
-     
+    $key_url = if ($key_src_override) {
+        $key_src_override
+    } else {
+        "${dist_url}/$key_file_name"
+    }
+
     # Install the GPG key and the repository.
     case $facts['os']['family'] {
         'RedHat': {
             # (Un-) Install the repository GPG key.
-            unless ($repo_src == undef) {
-                yum::gpgkey { "$key_dir/${key_prefix}${title}":
+            unless ($key_url == undef) {
+                yum::gpgkey { "${key_dir}/${key_prefix}${title}":
                     ensure => $ensure,
-                    source => $key_src,
+                    source => $key_url,
                 }
             }
 

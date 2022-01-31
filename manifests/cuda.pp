@@ -28,7 +28,10 @@
 # @param repo_owner The name or UID of the owning user of the repository file.
 # @param repo_group The name or UID of the owning group of the repository file.
 # @param key_id The ID of the GPG key used by the repository.
-# @param key_src The URL of the GPG key to be installed.
+# @param key_file_name The name of the GPG key file to be installed.
+# @param key_src_override Override the full URL of from which the GPG key is
+#                         retrieved. Otherwise, the key is searched in the
+#                         repository directory.
 # @param key_dir The directory where the key should be installed. This is only
 #                used on RedHat-based systems.
 # @param key_prefix An additional prefix string that is added before the
@@ -48,7 +51,8 @@ class nvdarepo::cuda(
         Variant[String, Integer] $repo_owner,
         Variant[String, Integer] $repo_group,
         String $key_id,
-        String $key_src,
+        String $key_file_name,
+        Variant[String, Boolean] $key_src_override = false,
         String $key_dir,
         String $key_prefix,
         String $ensure = present) {
@@ -64,10 +68,12 @@ class nvdarepo::cuda(
         repo_owner => $repo_owner,
         repo_group => $repo_group,
         key_id => $key_id,
-        key_src => $key_src,
+        key_file_name => $key_file_name,
+        key_src_override => $key_src_override,
         key_dir => $key_dir,
         key_prefix => $key_prefix,
         ensure => $ensure
     }
 
 }
+
