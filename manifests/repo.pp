@@ -80,15 +80,13 @@ define nvdarepo::repo(
     case $facts['os']['family'] {
         'RedHat': {
             # (Un-) Install the repository GPG key.
-            unless ($key_url == undef) {
-                yum::gpgkey { "${key_dir}/${key_prefix}${title}":
-                    ensure => $ensure,
-                    source => $key_url,
-                }
+            yum::gpgkey { "${key_dir}/${key_prefix}${title}":
+                ensure => $ensure,
+                source => $key_url,
             }
 
             # (Un-) Install the repo definition.
-            class { 'yum':
+            ~> class { 'yum':
                 managed_repos => [ $title ],
                 repos => {
                     $title => {
