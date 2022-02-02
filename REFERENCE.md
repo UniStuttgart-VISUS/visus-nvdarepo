@@ -11,6 +11,7 @@
 
 ### Defined types
 
+* [`nvdarepo::ordered_install`](#nvdarepoordered_install): (Un-) Installs packages in a specific order.
 * [`nvdarepo::repo`](#nvdareporepo): (Un-) Installs a repository along with its GPG key.
 
 ## Classes
@@ -40,7 +41,8 @@ The following parameters are available in the `nvdarepo::cuda` class:
 * [`repo_owner`](#repo_owner)
 * [`repo_group`](#repo_group)
 * [`key_id`](#key_id)
-* [`key_src`](#key_src)
+* [`key_file_name`](#key_file_name)
+* [`key_src_override`](#key_src_override)
 * [`key_dir`](#key_dir)
 * [`key_prefix`](#key_prefix)
 * [`ensure`](#ensure)
@@ -118,11 +120,21 @@ Data type: `String`
 
 The ID of the GPG key used by the repository.
 
-##### <a name="key_src"></a>`key_src`
+##### <a name="key_file_name"></a>`key_file_name`
 
 Data type: `String`
 
-The URL of the GPG key to be installed.
+The name of the GPG key file to be installed.
+
+##### <a name="key_src_override"></a>`key_src_override`
+
+Data type: `Variant[String, Boolean]`
+
+Override the full URL of from which the GPG key is
+retrieved. Otherwise, the key is searched in the
+repository directory.
+
+Default value: ``false``
 
 ##### <a name="key_dir"></a>`key_dir`
 
@@ -150,6 +162,36 @@ Default value: `present`
 
 ## Defined types
 
+### <a name="nvdarepoordered_install"></a>`nvdarepo::ordered_install`
+
+Installing CUDA on RHEL systems requires packages being installed in a
+specific order to use the DKMS driver module. This utility class enables
+you to do that by specifying aliases for the packages that define the
+order by means of their lexical order. The keys in the $packages hash
+given to the module determines this order. A dependency relationship
+between these keys will be established by this module. In order to
+specify this order in Hiera, it is best using keys starting with
+numbers like it is common in conf.d directories.
+
+#### Parameters
+
+The following parameters are available in the `nvdarepo::ordered_install` defined type:
+
+* [`packages`](#packages)
+
+##### <a name="packages"></a>`packages`
+
+Data type: `Hash`
+
+The $packages parameter is a hash specifying the packages
+to be installed. The keys of that hash determine the
+order in which the installation happens. The hash should
+at least hold the attributes "name" with the actual name
+of the package and "ensure" with the installation instruction.
+All of the per-package attributes are passed on to the
+installation, i.e. you can use every parameter that is
+acceptable for the Package resource.
+
 ### <a name="nvdareporepo"></a>`nvdarepo::repo`
 
 This is a utility type that is used by the nvdarepo class. It is not intended
@@ -170,7 +212,8 @@ The following parameters are available in the `nvdarepo::repo` defined type:
 * [`repo_owner`](#repo_owner)
 * [`repo_group`](#repo_group)
 * [`key_id`](#key_id)
-* [`key_src`](#key_src)
+* [`key_file_name`](#key_file_name)
+* [`key_src_override`](#key_src_override)
 * [`key_dir`](#key_dir)
 * [`key_prefix`](#key_prefix)
 * [`ensure`](#ensure)
@@ -244,11 +287,21 @@ Data type: `String`
 
 The ID of the GPG key used by the repository.
 
-##### <a name="key_src"></a>`key_src`
+##### <a name="key_file_name"></a>`key_file_name`
 
 Data type: `String`
 
-The URL of the GPG key to be installed.
+The name of the GPG key file to be installed.
+
+##### <a name="key_src_override"></a>`key_src_override`
+
+Data type: `Variant[String, Boolean]`
+
+Override the full URL of from which the GPG key is
+retrieved. Otherwise, the key is searched in the
+repository directory.
+
+Default value: ``false``
 
 ##### <a name="key_dir"></a>`key_dir`
 
