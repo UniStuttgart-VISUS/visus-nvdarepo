@@ -15,3 +15,6 @@ All notable changes to this project will be documented in this file.
 * Installation of GPG key is now mandatory.
 * Added ordered_install feature to allow for automating the installation of CUDA along with the DKMS-variant of the driver as described on NVIDIA's website.
 * Updated documentation.
+
+## Release 0.1.4
+* Updated documentation.
