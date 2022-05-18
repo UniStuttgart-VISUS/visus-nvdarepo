@@ -71,7 +71,6 @@ and specify the packages and their order in Hiera as
 
 ```yaml
 profile::cuda::packages:
-visusprofile::dev::cuda::packages:
   00-nvidia-driver-latest-dkms:
     name: nvidia-driver-latest-dkms
     ensure: installed

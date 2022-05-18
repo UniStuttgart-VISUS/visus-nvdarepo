@@ -39,6 +39,9 @@
 #                   systems.
 # @param ensure Determines whether the repository should be present or absent.
 #               This defaults to "present".
+# @param disable_repos Allows for specifying yum repositories to be disabled.
+#                      This is required to handle a conflict with
+#                      rpmfusion-nonfree on Fedora.
 #
 # @author Christoph Müller
 class nvdarepo::cuda(
@@ -55,7 +58,9 @@ class nvdarepo::cuda(
         Variant[String, Boolean] $key_src_override = false,
         String $key_dir,
         String $key_prefix,
-        String $ensure = present) {
+        String $ensure = present,
+        Array[String] $disable_repos = []
+        ) {
 
     # Use the repo helper to install the CUDA repository.
     nvdarepo::repo { 'nvidia-cuda':
@@ -72,7 +77,8 @@ class nvdarepo::cuda(
         key_src_override => $key_src_override,
         key_dir => $key_dir,
         key_prefix => $key_prefix,
-        ensure => $ensure
+        ensure => $ensure,
+        disable_repos => $disable_repos
     }
 
 }

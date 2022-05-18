@@ -1,2 +1,5 @@
 ---
 nvdarepo::cuda::distro_override: 'fedora'
+nvdarepo::cuda::disable_repos: 
+  - 'rpmfusion-nonfree'
+  - 'rpmfusion-nonfree-updates'

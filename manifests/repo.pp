@@ -36,6 +36,9 @@
 #                   systems and should be something like "RPM-GPG-KEY-".
 # @param ensure Determines whether the repository should be present or absent.
 #               This defaults to "present".
+# @param disable_repos Allows for specifying yum repositories to be disabled.
+#                      This is required to handle a conflict with
+#                      rpmfusion-nonfree on Fedora.
 #
 # @author Christoph Müller
 define nvdarepo::repo(
@@ -52,7 +55,8 @@ define nvdarepo::repo(
         Variant[String, Boolean] $key_src_override = false,
         String $key_dir,
         String $key_prefix,
-        String $ensure = present
+        String $ensure = present,
+        Array[String] $disable_repos = []
         ) {
 
     # Determine the final URL of the repository according to the rules used by
@@ -61,14 +65,14 @@ define nvdarepo::repo(
         $distro_override
     } else {
         downcase($facts['os']['name'])
-        
+
     }
     $nvda_version = regsubst(downcase($facts['os']['release'][$version_field]),
         '\\.', '')
     $dist_url = if ($repo_src_override) {
         $repo_src_override
     } else {
-        "${base_url}/${nvda_distro}${nvda_version}/x86_64"        
+        "${base_url}/${nvda_distro}${nvda_version}/x86_64"
     }
     $key_url = if ($key_src_override) {
         $key_src_override
@@ -98,10 +102,14 @@ define nvdarepo::repo(
                     }
                 }
             }
+
+            yumrepo { $disable_repos:
+                ensure => absent
+            }
         }
 
         default: {
-            fail(translate('The current distribution is not supported by ${title}.'))
+            fail(translate("The current distribution is not supported by ${title}."))
         }
     }
 }
