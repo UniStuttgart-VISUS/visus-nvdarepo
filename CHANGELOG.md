@@ -18,3 +18,7 @@ All notable changes to this project will be documented in this file.
 
 ## Release 0.1.4
 * Updated documentation.
+
+## Release 0.1.5
+* Added the option to disable conflicting repositories, notably rpmfusion-nonfree on Fedora.
+* Updated NVIDIA's repository keys to be installed.
