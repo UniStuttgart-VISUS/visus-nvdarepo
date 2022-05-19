@@ -77,7 +77,7 @@ define nvdarepo::repo(
     $key_url = if ($key_src_override) {
         $key_src_override
     } else {
-        "${dist_url}/$key_file_name"
+        "${dist_url}/${key_file_name}"
     }
 
     # Install the GPG key and the repository.

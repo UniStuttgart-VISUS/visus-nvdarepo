@@ -63,7 +63,7 @@ class profile::cuda(Hash $packages) {
     }
 
     # Make sure that NVIDIA module is installed.
-    ~> exec { '/usr/sbin/dkms autoinstall -m nvidia': }    
+    ~> exec { '/usr/sbin/dkms autoinstall -m nvidia': }
 }
 ```
 
@@ -84,6 +84,20 @@ profile::cuda::packages:
     name: libcudnn8-devel
     ensure: installed
 ```
+
+If you have environment modules installed on your machine and want to be able to switch between CUDA versions, you can use `nvdarepo::cuda-module-files` to automatically create module files for all packages of format `cuda[-version]`:
+
+```puppet
+class profile::cuda(Hash $packages) {
+    # Other stuff here ...
+
+    ~> nvdarepo::cuda_module_files { 'cuda-module-files':
+        packages => $packages
+    }
+}
+```
+
+Note that `nvdarepo::cuda-module-files` will automatically make sure that  the `environment-modules` package is installed on your system.
 
 ## Limitations
 Only distributions listed in `metadata.json` are supported.

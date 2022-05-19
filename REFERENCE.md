@@ -11,6 +11,8 @@
 
 ### Defined types
 
+* [`nvdarepo::cuda_module_files`](#nvdarepocuda_module_files): (Un-) Installs a module file for making specific CUDA versions
+available on demand.
 * [`nvdarepo::ordered_install`](#nvdarepoordered_install): (Un-) Installs packages in a specific order.
 * [`nvdarepo::repo`](#nvdareporepo): (Un-) Installs a repository along with its GPG key.
 
@@ -46,6 +48,7 @@ The following parameters are available in the `nvdarepo::cuda` class:
 * [`key_dir`](#key_dir)
 * [`key_prefix`](#key_prefix)
 * [`ensure`](#ensure)
+* [`disable_repos`](#disable_repos)
 
 ##### <a name="base_url"></a>`base_url`
 
@@ -160,7 +163,88 @@ This defaults to "present".
 
 Default value: `present`
 
+##### <a name="disable_repos"></a>`disable_repos`
+
+Data type: `Array[String]`
+
+Allows for specifying yum repositories to be disabled.
+This is required to handle a conflict with
+rpmfusion-nonfree on Fedora.
+
+Default value: `[]`
+
 ## Defined types
+
+### <a name="nvdarepocuda_module_files"></a>`nvdarepo::cuda_module_files`
+
+This is a utility type that can be used by administrators to create module
+files for installed CUDA versions. This allows end users to use the module
+enviroment to switch between different versions of CUDA as necessary.
+
+#### Parameters
+
+The following parameters are available in the `nvdarepo::cuda_module_files` defined type:
+
+* [`packages`](#packages)
+* [`ensure`](#ensure)
+* [`module_dir`](#module_dir)
+* [`install_dir`](#install_dir)
+* [`system_version`](#system_version)
+* [`module_packages`](#module_packages)
+
+##### <a name="packages"></a>`packages`
+
+Data type: `Hash`
+
+The hash from the ordered_install, which is used to filter
+CUDA packages and create the module files for them.
+
+##### <a name="ensure"></a>`ensure`
+
+Data type: `String`
+
+Indicates whether the module file should be written or
+removed. This defaults to 'present'.
+
+Default value: `present`
+
+##### <a name="module_dir"></a>`module_dir`
+
+Data type: `String`
+
+The directory receiving the module file. This parameter
+defaults to '/etc/modulefiles'.
+
+Default value: `'/etc/modulefiles'`
+
+##### <a name="install_dir"></a>`install_dir`
+
+Data type: `String`
+
+The directory where CUDA is assumed to be installed. If
+a specific version is selected, this version is suffixed
+to this path, wherefore it should not be terminated with
+a directory separator. This parameter defaults to
+'/usr/local/cuda'.
+
+Default value: `'/usr/local/cuda'`
+
+##### <a name="system_version"></a>`system_version`
+
+Data type: `String`
+
+The version string used for the default current version
+of CUDA. This parameter defaults to 'system'.
+
+Default value: `'system'`
+
+##### <a name="module_packages"></a>`module_packages`
+
+Data type: `Array[String]`
+
+
+
+Default value: `[ 'environment-modules' ]`
 
 ### <a name="nvdarepoordered_install"></a>`nvdarepo::ordered_install`
 
@@ -217,6 +301,7 @@ The following parameters are available in the `nvdarepo::repo` defined type:
 * [`key_dir`](#key_dir)
 * [`key_prefix`](#key_prefix)
 * [`ensure`](#ensure)
+* [`disable_repos`](#disable_repos)
 
 ##### <a name="base_url"></a>`base_url`
 
@@ -326,4 +411,14 @@ Determines whether the repository should be present or absent.
 This defaults to "present".
 
 Default value: `present`
+
+##### <a name="disable_repos"></a>`disable_repos`
+
+Data type: `Array[String]`
+
+Allows for specifying yum repositories to be disabled.
+This is required to handle a conflict with
+rpmfusion-nonfree on Fedora.
+
+Default value: `[]`
 

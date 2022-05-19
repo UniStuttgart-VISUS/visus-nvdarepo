@@ -1,0 +1,40 @@
+<%- | String $root,
+      Optional[String] $version,
+      Array[String] $prerequisites = [],
+      Array[String] $conflicts = []
+| -%>
+#%Module 1.0
+# -----------------------------------------------------------------------------#
+# Managed and automatically deployed by Puppet. Changes will be overwritten.   #
+# -----------------------------------------------------------------------------#
+
+proc ModulesHelp { } {
+  puts stderr "This module loads [module-info name]."
+}
+
+module-whatis "This module loads [module-info name]."
+
+#------------------------------------------------------------------------------#
+# Dependencies and conflicts:
+<% if !$prerequisites.empty { %>prereq <%= join($prerequisites, ' ') %><% } %>
+<% if !$conflicts.empty { %>conflict <%= join($conflicts, ' ') %><% } %>
+
+#------------------------------------------------------------------------------#
+# Module file-local variables:
+set root <%= $root %>
+<% if $version { %>set version <%= $version %><% } %>
+
+#------------------------------------------------------------------------------#
+# CUDA environment variables:
+<% if $version { %>setenv CUDA_VERSION $version<% } %>
+setenv CUDA_VERSION_HOME $root
+setenv CUDA_VERSION_INC_PATH $root/include
+setenv CUDA_VERSION_LIB_PATH $root/lib
+setenv CUDA_VERSION_LIB64_PATH $root/lib64
+setenv CUDA_VERSION_BIN_PATH $root/bin
+
+#------------------------------------------------------------------------------#
+# Environment updates:
+prepend-path PATH $root/bin
+prepend-path LD_LIBRARY_PATH $root/lib
+prepend-path LD_LIBRARY_PATH $root/lib64

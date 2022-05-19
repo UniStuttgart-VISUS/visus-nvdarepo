@@ -1,13 +1,16 @@
 {
   "name": "visus-nvdarepo",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "author": "Christoph Müller",
   "summary": "Installs NVIDIA repository sources for CUDA etc. via Puppet.",
   "license": "MIT",
   "source": "https://github.com/UniStuttgart-VISUS/visus-nvdarepo",
   "issues_url": "https://github.com/UniStuttgart-VISUS/visus-nvdarepo/issues",
   "dependencies": [
-
+    {
+      "name": "puppetlabs-stdlib",
+      "version_requirement": ">=5.0.0"
+    }
   ],
   "operatingsystem_support": [
     {

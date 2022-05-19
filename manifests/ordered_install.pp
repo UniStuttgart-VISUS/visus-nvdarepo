@@ -23,11 +23,11 @@ define nvdarepo::ordered_install(Hash $packages) {
     # Install packages configured via Hiera, making sure that they are invoked
     # in the order they have been specified. The solution has been described at
     # https://stackoverflow.com/questions/70942825/declare-dependency-between-array-elements-in-puppet#70943534
-    $orderedPackages = keys($packages).sort
+    $ordered_packages = keys($packages).sort
 
-    $orderedPackages.each | Integer $index, String $package | {
+    $ordered_packages.each | Integer $index, String $package | {
         if $index > 0 {
-            Package[$orderedPackages[$index - 1]] ~> Package[$package]
+            Package[$ordered_packages[$index - 1]] ~> Package[$package]
         }
     }
 
