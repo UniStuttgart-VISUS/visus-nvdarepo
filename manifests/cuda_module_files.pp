@@ -36,7 +36,7 @@ define nvdarepo::cuda_module_files(
 
     # Make sure that the module directory exists.
     file { "${$module_dir}":
-        ensure => if ($ensures == present) { directory },
+        ensure => if ($ensure == present) { directory },
         owner => root,
         group => root,
         mode => '0644',
