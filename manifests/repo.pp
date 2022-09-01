@@ -91,6 +91,7 @@ define nvdarepo::repo(
 
             # (Un-) Install the repo definition.
             ~> class { 'yum':
+                #managed_repos => $disable_repos + $title,
                 managed_repos => [ $title ],
                 repos => {
                     $title => {
@@ -103,8 +104,14 @@ define nvdarepo::repo(
                 }
             }
 
-            yumrepo { $disable_repos:
-                ensure => absent
+            # Disable built-in repos conflicting with NVIDIA's.
+            # Cf. https://ma.ttias.be/puppet-not-prefetch-yumrepo-provider-inifile-section-already-defined-cannot-redefine/
+            # for rename hack.
+            $disable_repos.each | String $r | {
+                yumrepo { "nvdarepo-${r}":
+                    name => $r,
+                    ensure => absent
+                }
             }
         }
 
