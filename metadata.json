@@ -1,6 +1,6 @@
 {
   "name": "visus-nvdarepo",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "author": "Christoph Müller",
   "summary": "Installs NVIDIA repository sources for CUDA etc. via Puppet.",
   "license": "MIT",

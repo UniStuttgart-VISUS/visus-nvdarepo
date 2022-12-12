@@ -25,3 +25,6 @@ All notable changes to this project will be documented in this file.
 
 ## Release 0.1.6
 * Added the option to write environment modules for CUDA versions being installed.
+
+## Release 0.1.7
+* Fix generation of module files.
