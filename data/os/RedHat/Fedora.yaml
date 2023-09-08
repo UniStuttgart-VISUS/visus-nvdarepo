@@ -5,3 +5,5 @@ nvdarepo::cuda::disable_repos:
   - 'rpmfusion-nonfree-source'
   - 'rpmfusion-nonfree-updates'
   - 'rpmfusion-nonfree-updates-source'
+  - 'rpmfusion-nonfree-nvidia-driver'
+  - 'rpmfusion-nonfree-nvidia-steam'
