@@ -25,7 +25,6 @@
 define nvdarepo::ordered_install(Hash $packages,
         Array[String] $conflicts = []
         ) {
-    notify { ">>>>>>${conflicts} ...": }
     # Remove the things we do not like first.
     package { $conflicts:
         ensure => absent
