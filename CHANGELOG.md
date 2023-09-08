@@ -28,3 +28,6 @@ All notable changes to this project will be documented in this file.
 
 ## Release 0.1.7
 * Fix generation of module files.
+
+## Release 0.1.8
+* Added the ability to have ordered_install remove conflicting packages from other sources.

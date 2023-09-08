@@ -1,6 +1,6 @@
 {
   "name": "visus-nvdarepo",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "author": "Christoph Müller",
   "summary": "Installs NVIDIA repository sources for CUDA etc. via Puppet.",
   "license": "MIT",
@@ -48,7 +48,9 @@
       "operatingsystem": "Fedora",
       "operatingsystemrelease": [
         "34",
-        "35"
+        "35",
+        "36",
+        "37"
       ]
     }
   ],

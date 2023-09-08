@@ -17,9 +17,20 @@
 #                 All of the per-package attributes are passed on to the
 #                 installation, i.e. you can use every parameter that is
 #                 acceptable for the Package resource.
+# @param conflicts The $conflicts parameter lists the names of packages that
+#                  conflict with the stuff to be installed from NVIDIA and that
+#                  should therefore be erased.
 #
 # @author Christoph Müller
-define nvdarepo::ordered_install(Hash $packages) {
+define nvdarepo::ordered_install(Hash $packages,
+        Array[String] $conflicts = []
+        ) {
+    notify { ">>>>>>${conflicts} ...": }
+    # Remove the things we do not like first.
+    package { $conflicts:
+        ensure => absent
+    }
+
     # Install packages configured via Hiera, making sure that they are invoked
     # in the order they have been specified. The solution has been described at
     # https://stackoverflow.com/questions/70942825/declare-dependency-between-array-elements-in-puppet#70943534
