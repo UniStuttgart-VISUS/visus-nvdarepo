@@ -56,7 +56,8 @@ define nvdarepo::repo(
         String $key_dir,
         String $key_prefix,
         String $ensure = present,
-        Array[String] $disable_repos = []
+        Array[String] $disable_repos = [],
+        Boolean $module_hotfixes = false
         ) {
 
     # Determine the final URL of the repository according to the rules used by
@@ -102,6 +103,13 @@ define nvdarepo::repo(
                         target => "${repo_dir}/${title}${repo_ext}"
                     }
                 }
+            }
+
+            # Set option module_hotfixes
+            ~> file_line { 'module_hotfixes':
+                ensure => if ($module_hotfixes) { 'present' } else { 'absent' },
+                path   => "${repo_dir}/${title}${repo_ext}",
+                line   => 'module_hotfixes=1',
             }
 
             # Disable built-in repos conflicting with NVIDIA's.

@@ -59,7 +59,8 @@ class nvdarepo::cuda(
         String $key_dir,
         String $key_prefix,
         String $ensure = present,
-        Array[String] $disable_repos = []
+        Array[String] $disable_repos = [],
+        Boolean $module_hotfixes = false
         ) {
 
     # Use the repo helper to install the CUDA repository.
@@ -78,7 +79,8 @@ class nvdarepo::cuda(
         key_dir => $key_dir,
         key_prefix => $key_prefix,
         ensure => $ensure,
-        disable_repos => $disable_repos
+        disable_repos => $disable_repos,
+        module_hotfixes => $module_hotfixes
     }
 
 }
